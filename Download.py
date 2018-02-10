@@ -43,7 +43,7 @@ class Download:
                                                filename=file_path,
                                                reporthook=self._print_download_progress)
 
-            print ('ciao')
+
             if file_path.endswith(".zip"):
                 zipfile.ZipFile(file=file_path,mode="r").extractall(download_dir)
             elif file_path.endswith((".tar.gz",".tgz")):

@@ -6,6 +6,9 @@ import os
 import shutil
 from Cache import Cache
 from Download import Download
+import subprocess
+import argparse
+
 
 
 def one_hot_encoded(class_numbers, num_classes=None):
@@ -195,6 +198,7 @@ class Dataset:
                 shutil.copy(src=src,dst=class_dirs[cls])
 
         # Copy the files for the training-set.
+        #self.get_paths ritorna i path delle immagini da copiare nel training set test=False
         _copy_files(src_paths=self.get_paths(test=False),
                         dst_dir=train_dir,
                         class_numbers=self.class_numbers)
@@ -202,6 +206,7 @@ class Dataset:
         print("- Copied training-set to:", train_dir)
 
         # Copy the files for the test-set.
+        #test=True ritorna tutte le path del test
         _copy_files(src_paths=self.get_paths(test=True),
                         dst_dir=test_dir,
                         class_numbers=self.class_numbers_test)
@@ -224,14 +229,30 @@ class DatasetManagement:
 
 
     def __init__(self):
+
+        """
+        Classe per gestire la copia dei dati da una forma
+        /dataset/class1/
+        /dataset/class1/test
+        To
+        /train/class1
+        test/class2
+        """
+        #variabile dove si trova il dataset
         self.data_dir="/Users/Eric/Desktop/eric/Programmazione/python/DeepLearning/data/knifey-spoony"
+        #Url dove posso scaricare un dataset
         self.data_url="https://github.com/Hvass-Labs/knifey-spoony/raw/master/knifey-spoony.tar.gz"
+        #path della cartella di train
         self.train_dir=os.path.join(self.data_dir,"train/")
+        #path della cartella di test
         self.test_dir=os.path.join(self.data_dir,"test/")
+        #dimensione immagine
         self.image_size=200
+        #canali immagine
         self.num_channels=3
         self.img_shape=[self.image_size,self.image_size,self.num_channels]
         self.img_size_flat=self.image_size*self.image_size*self.num_channels
+        #numero di classi del dataset
         self.num_classes=3
         self.download=Download()
 
@@ -239,6 +260,8 @@ class DatasetManagement:
        pass
 
     def execute(self):
+
+        #gestione caricamento dataset da internet o da locale
 
         #scarica il dataset da internet se non è presente
         self.download.maybe_downlaod_and_extract(url=self.data_url,download_dir=self.data_dir)
@@ -254,8 +277,75 @@ class DatasetManagement:
 
 
 
+class DatasetCreate:
+    """
+    classe utilizzata per creare dai singoli video una struttura
+    
+    dataset_name/class1
+    dataset_name/class1/test
+    
+    che verrà utilizzata dalla classe DatasetManagement per creare la struttura 
+    test/class1
+    train/class1
+    necessaria per il training con Keras e i generator
+    
+    """
 
 
+    def __init__(self,output_dir):
+        """
+        
+        :param output_dir:cartella di output del dataset 
+        """
+        self.data_dir=output_dir
+        pass
+
+    def create_dataset_from_video(self, in_dir, crop_size, out_size, framerate, video_exts):
+
+        """
+
+        :param in_dir: cartella dove sono contenuti i video
+        :param crop_size: ridimensionamento dei frame del video
+        :param out_size: dimensione del video dopo il ridimensionamento
+        :param framerate: Numero di frame da prendere per secondo
+        :param video_exts: tipo di estensione del video
+        :return:
+         
+         
+        """
+
+        # converte le estensione dei video con minuscole
+        video_exts = tuple(ext.lower() for ext in video_exts)
+
+        video_counts = 0
+
+        for current_dir, dir_names, file_names in os.walk(in_dir):
+
+            relative_path = os.path.realpath(current_dir, in_dir)
+
+            new_dir = os.path.join(self.data_dir, relative_path)
+
+            if not os.path.exists(new_dir):
+                os.makedirs(new_dir)
+
+            for file_name in file_names:
+                if file_name.lower().endswith(video_exts):
+                    in_file = os.path.join(current_dir, file_name)
+
+                    file_root, file_ext = os.path.splitext(file_name)
+
+                    new_file_name = file_root + "-%4d.jpg"
+
+                    new_file_path = os.path.join(new_dir, new_file_name)
+
+                    new_file_path = os.path.normpath(new_file_path)
+
+                    cmd = "avconv -i {0} -r {1} -vf crop={2}:{2} -vf scale={3}:{3} -qscale 2 {4}"
+
+                    cmd = cmd.format(in_file, framerate, crop_size, out_size, new_file_path)
+                    subprocess.call(cmd, shell=True)
+                    video_counts += 1
+        print ("Number of videos converted: {0}".format(video_counts))
 
 
 

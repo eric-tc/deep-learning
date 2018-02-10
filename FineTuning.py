@@ -23,36 +23,41 @@ class TransferLearning:
 
 
    # def __init__(self,model,training,train_dir,test_dir,save_to_dir,batch_size,loss,metrics,epochs,step_per_epoch):
-    def __init__(self):
+    def __init__(self,training,batch_size,optimizer,loss,epochs,step_per_epoch,directory_output):
 
 
         #decido se voglio il transfer learning o il fine tuning 2 opzioni 'transfer_learning' 'fine_tuning'
-        self.training='transfer_learning'
+        self.training=training
 
         self.model = VGG16(include_top=True, weights='imagenet')
 
 
         self.class_weights=None
 
-        self.batch_size=20
+        self.batch_size=batch_size
         if(isinstance(self.batch_size,int)):
             #originale= self.batch_size=self.batch_size
-            self.batch_size=self.batch_size
+            pass
         else:
             self.error="Batch Size non è un numero"
 
-        self.optimizer = Adam(lr=1e-5)
+        if optimizer=="Adam":
 
-        self.loss = None
+            self.optimizer = Adam(lr=1e-5)
 
-        self.save_to_dir="/Users/Eric/Desktop/Save"
+
+        self.loss = 'categorical_crossentropy'
+
+        print self.loss
+
+        self.save_to_dir=directory_output
 
         self.metrics = ['{}'.format('categorical_accuracy')]
 
         #numero di epoche *steps_per_epoca=batch_size*numero_training
-        self.epochs=20
+        self.epochs=epochs
         #numero di training per epoca
-        self.step_per_epoch=100
+        self.step_per_epoch=step_per_epoch
 
 
 
@@ -97,7 +102,7 @@ class TransferLearning:
 
         datagen_test = ImageDataGenerator(rescale=1. / 255)
 
-        self.batch_size = 20
+
 
         generator_train = datagen_train.flow_from_directory(directory=self.train_dir,
                                                             target_size=input_shape,
@@ -149,11 +154,11 @@ class TransferLearning:
 
         new_model.add(Dense(num_classes, activation='softmax'))
 
-        self.optimizer = Adam(lr=1e-5)
 
-        self.loss = 'categorical_crossentropy'
 
-        self.metrics = ['categorical_accuracy']
+
+
+
 
         if (self.training == 'transfer_learning'):
             for layer in conv_model.layers:
