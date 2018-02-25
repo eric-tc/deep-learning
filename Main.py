@@ -145,7 +145,7 @@ class Tabs(QtGui.QTabWidget):
 
     def __init__(self,parent):
 
-        #attraverso il parent il widget è agganciato alla MainWindow
+        #attraverso il parent, il widget è agganciato alla MainWindow
         super(Tabs,self).__init__(parent)
         self.create_tabs()
         #directory contenente il dataset
@@ -255,7 +255,7 @@ class Tabs(QtGui.QTabWidget):
         grid_dataset.addWidget(framerate_label, 5, 0)
         grid_dataset.addWidget(self.framerate, 5, 1)
 
-        grid_dataset.addWidget(self.create_dataset_button, 5, 0)
+        grid_dataset.addWidget(self.create_dataset_button, 6, 0)
 
 
         #self perchè tab1 appartiene alla classe
