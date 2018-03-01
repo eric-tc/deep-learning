@@ -186,6 +186,12 @@ class Tabs(QtGui.QTabWidget):
 
 
 
+        #nome del dataset
+
+        dataset_name_label=QtGui.QLabel("nome dataset")
+        self.dataset_name=QtGui.QLineEdit()
+
+
         # crop_size
 
         crop_size_label = QtGui.QLabel("crop size")
@@ -220,7 +226,7 @@ class Tabs(QtGui.QTabWidget):
 
 
         #framerate dataset
-        framerate_label=QtGui.QLabel("output cartella dataset")
+        framerate_label=QtGui.QLabel("framerate")
         self.framerate = QtGui.QLineEdit()
         self.framerate.setValidator(QtGui.QIntValidator())
         self.framerate.setMaxLength(3)
@@ -240,22 +246,24 @@ class Tabs(QtGui.QTabWidget):
 
 
 
-        grid_dataset.addWidget(crop_size_label,1,0)
-        grid_dataset.addWidget(self.crop_size,1,1)
+        grid_dataset.addWidget(dataset_name_label,1,0)
+        grid_dataset.addWidget(self.dataset_name,1,1)
+        grid_dataset.addWidget(crop_size_label,2,0)
+        grid_dataset.addWidget(self.crop_size,2,1)
 
-        grid_dataset.addWidget(output_size_label, 2, 0)
-        grid_dataset.addWidget(self.output_size, 2, 1)
+        grid_dataset.addWidget(output_size_label, 3, 0)
+        grid_dataset.addWidget(self.output_size, 3, 1)
 
-        grid_dataset.addWidget(video_ext_label, 3, 0)
-        grid_dataset.addWidget(self.video_extension, 3, 1)
+        grid_dataset.addWidget(video_ext_label, 4, 0)
+        grid_dataset.addWidget(self.video_extension, 4, 1)
 
-        grid_dataset.addWidget(carica_cartella_video,4,0)
-        grid_dataset.addWidget(self.cartella_video, 4, 1)
+        grid_dataset.addWidget(carica_cartella_video,5,0)
+        grid_dataset.addWidget(self.cartella_video, 5, 1)
 
-        grid_dataset.addWidget(framerate_label, 5, 0)
-        grid_dataset.addWidget(self.framerate, 5, 1)
+        grid_dataset.addWidget(framerate_label, 6, 0)
+        grid_dataset.addWidget(self.framerate, 6, 1)
 
-        grid_dataset.addWidget(self.create_dataset_button, 6, 0)
+        grid_dataset.addWidget(self.create_dataset_button, 7, 0)
 
 
         #self perchè tab1 appartiene alla classe
@@ -399,6 +407,7 @@ class Tabs(QtGui.QTabWidget):
 
 
 
+
     def button_event_execute(self):
         """
         Inizia il training con i parametri indicati
@@ -441,7 +450,7 @@ class Tabs(QtGui.QTabWidget):
         self.dataset_create=DatasetCreate()
 
         #crea il dataset dai video forniti
-        self.dataset_create.create_dataset_from_video(self.directory_video,int(self.crop_size.text()),int(self.output_size.text()),
+        self.dataset_create.create_dataset_from_video(self.directory_video,str(self.dataset_name.text()),int(self.crop_size.text()),int(self.output_size.text()),
                                                       int(self.framerate.text()),self.video_extension.currentText())
 
 

@@ -292,15 +292,14 @@ class DatasetCreate:
     """
 
 
-    def __init__(self,output_dir):
+    def __init__(self):
         """
         
         :param output_dir:cartella di output del dataset 
         """
-        self.data_dir=output_dir
         pass
 
-    def create_dataset_from_video(self, in_dir, crop_size, out_size, framerate, video_exts):
+    def create_dataset_from_video(self, in_dir,output_dir, crop_size, out_size, framerate, video_exts):
 
         """
 
@@ -315,15 +314,21 @@ class DatasetCreate:
         """
 
         # converte le estensione dei video con minuscole
-        video_exts = tuple(ext.lower() for ext in video_exts)
+        #posso evitare di mettere il controllo se i valori li seleziono io da menù a tendina
+        #video_exts = tuple(ext.lower() for ext in video_exts)
 
+        in_dir=in_dir+"/"
         video_counts = 0
+        print "cartella input"
+        print in_dir
 
         for current_dir, dir_names, file_names in os.walk(in_dir):
 
-            relative_path = os.path.realpath(current_dir, in_dir)
+            relative_path = os.path.relpath(current_dir,in_dir)
+            print relative_path
+            print output_dir
 
-            new_dir = os.path.join(self.data_dir, relative_path)
+            new_dir = os.path.join(output_dir, relative_path)
 
             if not os.path.exists(new_dir):
                 os.makedirs(new_dir)
